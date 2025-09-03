@@ -1,0 +1,167 @@
+Creating master_ansible,ansible_worker1 and ansible_worker2 from linode
+
+#======== SETTING UP MASTER NODE===========#
+
+[root@workstation ~]# hostnamectl set-hostname workstation.example.com
+[root@workstation ~]# vim /etc/hosts
+    172.236.187.96 workstation.example.com workstation
+    172.236.172.15 server1.example.com server1
+    172.236.172.47 server2.example.com server2
+
+[root@workstation ~]# yum clean all
+[root@workstation ~]# yum update && yum upgrade -y
+[root@workstation ~]# dnf update
+[root@workstation ~]# python3 --version
+[root@workstation ~]#useradd student
+[root@workstation ~]# dnf install epel-release -y
+[root@workstation ~]# dnf install fail2ban fail2ban-firewalld -y
+[root@workstation ~]# systemctl enable --now fail2ban
+[root@workstation ~]# systemctl enable --now firewalld
+[root@workstation ~]# vim /etc/fail2ban/jail.d/sshd.local
+    [sshd]
+    enabled = true
+    port = ssh
+    filter = sshd
+    backend = systemd
+    logpath = /var/log/secure
+    maxretry = 3
+    findtime = 600
+    bantime = 1d
+    banaction = firewallcmd-ipset
+[root@workstation ~]# systemctl restart fail2ban
+[root@workstation ~]# vim /etc/sudoers.d/student
+    student ALL=(ALL) NOPASSWD:ALL    
+[root@workstation ~]# dnf install python3-pip
+[root@workstation ~]# pip3.9 install 'ansible-navigator[ansible-core]'==2.1.0
+[root@workstation ~]# ping server1
+    PING server1.example.com (172.236.172.15) 56(84) bytes of data.
+    64 bytes from server1.example.com (172.236.172.15): icmp_seq=1 ttl=62 time=0.271 ms
+    64 bytes from server1.example.com (172.236.172.15): icmp_seq=2 ttl=62 time=0.425 ms
+    64 bytes from server1.example.com (172.236.172.15): icmp_seq=3 ttl=62 time=0.475 ms
+    ^C
+    --- server1.example.com ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2045ms
+    rtt min/avg/max/mdev = 0.271/0.390/0.475/0.086 ms
+[root@workstation ~]# ping server2
+    PING server2.example.com (172.236.172.47) 56(84) bytes of data.
+    64 bytes from server2.example.com (172.236.172.47): icmp_seq=1 ttl=62 time=0.485 ms
+    64 bytes from server2.example.com (172.236.172.47): icmp_seq=2 ttl=62 time=0.380 ms
+    64 bytes from server2.example.com (172.236.172.47): icmp_seq=3 ttl=62 time=0.377 ms
+    ^C
+    --- server2.example.com ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2072ms
+    rtt min/avg/max/mdev = 0.377/0.414/0.485/0.050 ms
+
+
+# ======== FOR USER STUDENT ====== #
+[student@workstation ~]$ ssh-keygen -t rsa -b 4096 -f ~/.ssh/ansible_id_rsa -C "ansible@workstation" -N ""
+[student@workstation ~]$ ssh-copy-id -i ~/.ssh/ansible_id_rsa.pub student@server1
+[student@workstation ~]$ ssh-copy-id -i ~/.ssh/ansible_id_rsa.pub student@server2
+[student@workstation ~]$ sudo dnf install -y podman
+[student@workstation ~]$ mkdir ansible-navigator
+[student@workstation ~]$ cd ansible-navigator
+[student@workstation ansible-navigator]$ vim inventory
+[student@workstation ansible-navigator]$ cat inventory
+    [student@workstation ansible-navigator]$ cat inventory
+    workstation ansible_become=false
+    server1
+    server2
+
+    [web]
+    server1
+    server2
+
+    [database_dev]
+    server1
+
+    [database_prod]
+    server2
+[student@workstation ansible-navigator]$ cd
+[student@workstation ~]$ ansible-navigator
+    --------------------------------------------------------------------
+    Execution environment image and pull policy overview
+    --------------------------------------------------------------------
+    Execution environment image name:     quay.io/ansible/creator-ee:v0.4.2
+    Execution environment image tag:      v0.4.2
+    Execution environment pull arguments: None
+    Execution environment pull policy:    tag
+    Execution environment pull needed:    True
+    --------------------------------------------------------------------
+    Updating the execution environment
+    --------------------------------------------------------------------
+    Running the command: podman pull quay.io/ansible/creator-ee:v0.4.2
+    Trying to pull quay.io/ansible/creator-ee:v0.4.2...
+    Getting image source signatures
+    Copying blob 9313088620cb done   |
+    Copying blob f0a2109a2528 done   |
+    Copying blob bfd1401568a8 done   |
+    Copying blob 9f45cf1cd9f2 done   |
+    Copying blob fee18ea417d6 done   |
+    Copying blob b6ab6aae32e5 done   |
+    Copying blob 3a42a9201e2e done   |
+    Copying blob 16a9b87e1e5d done   |
+    Copying blob 242f50e5eaa3 done   |
+    Copying blob 78b6fd4cdfae done   |
+    Copying blob 07f2b8aa0935 done   |
+    Copying blob 9b29e52df9cd done   |
+    Copying blob 4bcd068d8449 done   |
+    Copying blob 7c9eac410aa3 done   |
+    Copying blob 50ada1e1e7fa done   |
+    Copying blob 5c700d062f34 done   |
+    Copying blob e442083ab125 done   |
+    Copying blob 862a3690160b done   |
+    Copying blob 1826ee9d5bac done   |
+    Copying blob a1597e9bba91 done   |
+    Copying blob e4e4778fd7c6 done   |
+    Copying blob 9a1e83cfb02d done   |
+    Copying blob 01a215fa6c38 done   |
+    Copying blob 7de32745499f done   |
+    Copying blob 08d60610f8f6 done   |
+    Copying blob e7cfbb40b063 done   |
+    Copying blob cc7e01572220 done   |
+    Copying blob d1b581893285 done   |
+    Copying blob 4ca545ee6d5d done   |
+    Copying blob 4a7326c2ac2c done   |
+    Copying blob 4ca545ee6d5d skipped: already exists
+    Copying config 12571ac947 done   |
+    Writing manifest to image destination
+    12571ac947cf67362a1c03e2b4afaa95cf93c8094ae827ca2d85059a1ce3e4a5
+    0│Welcome
+    1│——————————————————————————————————————————————————————————————————————————————————————————————————————————————
+    2│
+    3│Some things you can try from here:
+    4│- :collections                                    Explore available collections
+    5│- :config                                         Explore the current ansible configuration
+    6│- :doc <plugin>                                   Review documentation for a module or plugin
+    7│- :help                                           Show the main help page
+    8│- :images                                         Explore execution environment images
+    9│- :inventory -i <inventory>                       Explore an inventory
+    10│- :log                                            Review the application log
+    11│- :lint <file or directory>                       Lint Ansible/YAML files (experimental)
+    12│- :open                                           Open current page in the editor
+    13│- :replay                                         Explore a previous run using a playbook artifact
+    14│- :run <playbook> -i <inventory>                  Run a playbook in interactive mode
+    15│- :settings                                       Review the current ansible-navigator settings
+    16│- :quit                                           Quit the application
+    17│
+    18│happy automating,
+    19│
+    20│-winston
+
+
+    ^b/PgUp page up          ^f/PgDn page down          ↑↓ scroll          esc back          :help help
+[student@workstation ~]$ podman images
+    REPOSITORY                                                            TAG         IMAGE ID      CREATED      SIZE
+    quay.io/ansible/creator-ee                                            v0.4.2      12571ac947cf  3 years ago  2.4 GB
+[student@workstation ~]$
+[student@workstation ~]$ ansible-navigator -i ansible-navigator/inventory web -m command -a "uptime"
+[student@workstation ~]$ podman login registry.redhat.io
+[student@workstation ~]$ podman rmi quay.io/ansible/creator-ee:v0.4.2
+[student@workstation ~]$ podman pull registry.redhat.io/ansible-automation-platform-25/ee-supported-rhel9
+[student@workstation ~]$ podman images
+[student@workstation ~]$ vim ~/.ansible-navigator.yml
+[student@workstation ~]$ cat ~/.ansible-navigator.yml
+[student@workstation ~]$ touch ansible.cfg
+[student@workstation ~]$ vim ansible.cfg
+[student@workstation ~]$ ansible-navigator exec ansible -- -i inventory web -m ansible.builtin.ping
+[student@workstation ~]$ cat ansible.cfg
