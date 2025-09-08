@@ -79,3 +79,41 @@ server1 | CHANGED => {
     "state": "absent"
 }
 [student@workstation day1]$
+
+#=========Without stdout ==========#
+
+[student@workstation day1]$ ansible-navigator run user_add.yml
+  Play namOk Changed UnreachaFailed Skipped Ignored In progreTask coun Progress
+0│Adding a 2       1        0     0       0       0         0        2 Complete
+
+^b/PgUp page up^f/PgDn page down↑↓ scrollesc back[0-9] goto:help he Successful
+
+  Result Host    Number Changed Task              Task action         Duration
+0│Ok     server1      0 False   Gathering Facts   gather_facts              1s
+1│Ok     server1      1 True    Adding user Toyee ansible.builtin.user      1s
+
+Play name: Adding a new user:1
+Task name: Adding user Toyee
+CHANGED: server1
+ 0│---                                                                         ▒
+ 1│duration: 0.657419                                                          ▒
+ 2│end: '2025-09-08T07:31:01.556835+00:00'                                     ▒
+ 3│event_loop: null                                                            ▒
+ 4│host: server1                                                               ▒
+ 5│play: Adding a new user                                                     ▒
+ 6│play_pattern: server1                                                       ▒
+ 7│playbook: /home/student/ansible-navigator/day1/user_add.yml
+ 8│remote_addr: server1
+ 9│res:
+10│  _ansible_no_log: false
+11│  changed: true
+12│  comment: ''
+13│  create_home: true
+14│  group: 2000
+15│  home: /home/toyee
+16│  invocation:
+17│    module_args:
+18│	 append: false
+19│	 authorization: null
+20│	 comment: null
+^b/PgUp page ^f/PgDn page do↑↓ scroesc ba- previo+ ne[0-9] go:help  Successful
