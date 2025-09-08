@@ -1,0 +1,35 @@
+---
+- name: Install httpd and firewall to run a webserver
+  hosts: server1
+  tasks:
+    - name: Install httpd and firewall
+      ansible.builtin.dnf:
+        name:
+          - httpd
+          - firewalld
+        state: present
+
+    - name: add new content in httpd
+      ansible.builtin.copy:
+        content: "Welcome to Ansible Redhat!\n"
+        dest: /var/www/html/index.html
+        state: present
+
+    - name: start firewalld service
+      ansible.builtin.service:
+        name: firewalld
+        enabled: true
+        state: started
+
+    - name: add http in firewall
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: yes
+
+    - name: Start httpd service
+      ansible.builtin.service:
+        name: httpd
+        enabled: true
+        state: started

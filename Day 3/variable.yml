@@ -1,0 +1,43 @@
+---
+- name: Deploy and start apache
+  hosts: server2
+  vars:
+    web_pkg: httpd
+    web_service: httpd
+    firewall_pkg: firewalld
+    firewall_service: firewalld
+    python_pkg: python3-PyMySQL
+    rule: http
+
+  tasks:
+    - name: Required packages are up-to-date and installed
+      ansible.builtin.dnf:
+        name:
+          - "{{ web_pkg }}"
+          - "{{ firewall_pkg }}"
+          - "{{ python_pkg }}"
+        state: latest
+
+    - name: Start and enable firewall service
+      ansible.builtin.service:
+        name: "{{ firewall_service }}"
+        enabled: true
+        state: started
+
+    - name: Start and enable web service
+      ansible.builtin.service:
+        name: "{{ web_service }}"
+        enabled: true
+        state: started
+
+    - name: Web page content
+      ansible.builtin.copy:
+        content: "Example web content for server2!\n"
+        dest: /var/www/html/index.html
+
+    - name: Allowing web service port on firewall
+      ansible.posix.firewalld:
+        service: "{{ rule }}"
+        permanent: true
+        immediate: true
+        state: enabled

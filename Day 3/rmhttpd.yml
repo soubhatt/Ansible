@@ -1,0 +1,32 @@
+---
+- name: Uninstall httpd and remove webserver setup
+  hosts: server1
+  tasks:
+    - name: Stop and disable httpd service
+      ansible.builtin.service:
+        name: httpd
+        enabled: false
+        state: stopped
+
+    - name: Remove httpd package
+      ansible.builtin.dnf:
+        name: httpd
+        state: absent
+
+    - name: Remove index.html
+      ansible.builtin.file:
+        path: /var/www/html/index.html
+        state: absent
+
+    - name: Ensure firewalld is running
+      ansible.builtin.service:
+        name: firewalld
+        enabled: true
+        state: started
+
+    - name: Remove http from firewall
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: disabled
+        immediate: yes

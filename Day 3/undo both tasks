@@ -1,0 +1,65 @@
+#====== UNDO PLAYS TO KEEP SERVER CLEAN==========#
+#we know its a cloud server so its better to keep everything clean after practice
+
+[student@workstation day2]$ ansible-navigator run rmhttpd.yml -m stdout
+
+PLAY [Uninstall httpd and remove webserver setup] ******************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [server1]
+
+TASK [Stop and disable httpd service] ******************************************
+changed: [server1]
+
+TASK [Remove httpd package] ****************************************************
+changed: [server1]
+
+TASK [Remove index.html] *******************************************************
+changed: [server1]
+
+TASK [Ensure firewalld is running] *********************************************
+ok: [server1]
+
+TASK [Remove http from firewall] ***********************************************
+changed: [server1]
+
+PLAY RECAP *********************************************************************
+server1                    : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[student@workstation day2]$
+[student@workstation day2]$ curl server1
+curl: (7) Failed to connect to server1 port 80: No route to host
+[student@workstation day2]$
+
+#undoing the variable playbook ran on server2
+
+[student@workstation variables]$ vim undoplay.yml
+[student@workstation variables]$
+[student@workstation variables]$ ansible-navigator run undoplay.yml -m stdout
+
+PLAY [Remove apache deployment] ************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [server2]
+
+TASK [Stop and disable web service] ********************************************
+changed: [server2]
+
+TASK [Remove web package] ******************************************************
+changed: [server2]
+
+TASK [Remove index.html] *******************************************************
+changed: [server2]
+
+TASK [Ensure firewall is running] **********************************************
+ok: [server2]
+
+TASK [Remove firewall rule for web service] ************************************
+changed: [server2]
+
+PLAY RECAP *********************************************************************
+server2                    : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[student@workstation variables]$ curl server2
+curl: (7) Failed to connect to server2 port 80: No route to host
+[student@workstation variables]$
+
+# i have not removed firewalld package and python package as it was pre-inbuilt and need not needed to be removed

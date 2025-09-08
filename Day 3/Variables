@@ -1,0 +1,34 @@
+[student@workstation ansible-navigator]$ mkdir variables
+[student@workstation ansible-navigator]$ cd variables/
+[student@workstation variables]$ cp ../ansible.cfg ../inventory .
+[student@workstation variables]$ ls
+    ansible.cfg  inventory
+[student@workstation variables]$
+[student@workstation variables]$ vim variables.yml
+[student@workstation variables]$ ansible-navigator run variables.yml -m stdout --syntax-check
+    playbook: /home/student/ansible-navigator/variables/variables.yml
+[student@workstation variables]$
+[student@workstation variables]$ ansible-navigator run variables.yml -m stdout
+    PLAY [Deploy and start apache] *************************************************
+
+    TASK [Gathering Facts] *********************************************************
+    ok: [server2]
+
+    TASK [Required packages are up-to-date and installed] **************************
+    changed: [server2]
+
+    TASK [Start and enable firewall service] ***************************************
+    ok: [server2]
+
+    TASK [Start and enable web service] ********************************************
+    changed: [server2]
+
+    TASK [Web page content] ********************************************************
+    changed: [server2]
+
+    TASK [Allowing web service port on firewall] ***********************************
+    changed: [server2]
+
+    PLAY RECAP *********************************************************************
+    server2                    : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[student@workstation variables]$
