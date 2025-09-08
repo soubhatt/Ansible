@@ -1,0 +1,81 @@
+Running some Ad-Hoc Commands For Ansible
+#======== Adding and Removing a user ad-hoc command===========#
+
+[student@workstation ansible-navigator]$
+[student@workstation ansible-navigator]$ ansible server1 -m user -a 'name=ranjit shell=/sbin/nologin state=present'
+    server1 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": true,
+    "comment": "",
+    "create_home": true,
+    "group": 1001,
+    "home": "/home/ranjit",
+    "name": "ranjit",
+    "shell": "/sbin/nologin",
+    "state": "present",
+    "system": false,
+    "uid": 1001
+    }
+[student@workstation ansible-navigator]$ ansible server1 -m command -a 'tail /etc/passwd'
+    server1 | CHANGED | rc=0 >>
+    systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+    dbus:x:81:81:System message bus:/:/sbin/nologin
+    sssd:x:998:998:User for sssd:/:/sbin/nologin
+    tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+    sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+    polkitd:x:997:997:User for polkitd:/:/sbin/nologin
+    chrony:x:996:996:chrony system user:/var/lib/chrony:/sbin/nologin
+    student:x:1000:1000::/home/student:/bin/bash
+    apache:x:48:48:Apache:/usr/share/httpd:/sbin/nologin
+    ranjit:x:1001:1001::/home/ranjit:/sbin/nologin
+[student@workstation ansible-navigator]$
+[student@workstation ansible-navigator]$ ansible server1 -m user -a 'name=ranjit shell=/sbin/nologin state=absent remove=yes'
+    server1 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": true,
+    "force": false,
+    "name": "ranjit",
+    "remove": true,
+    "state": "absent"
+    }
+[student@workstation ansible-navigator]$
+
+#============Running Playbook Day1(user_add.yml)===============#
+
+[student@workstation ansible-navigator]$ mkdir day1
+[student@workstation ansible-navigator]$ cd day1/
+[student@workstation day1]$ cp ../inventory ../ansible.cfg .
+[student@workstation day1]$ ls
+    ansible.cfg  inventory
+[student@workstation day1]$ vim user_add.yml
+[student@workstation day1]$ ansible-navigator run user_add.yml -m stdout --syntax-check
+    playbook: /home/student/ansible-navigator/day1/user_add.yml
+[student@workstation day1]$ ansible-navigator run user_add.yml -m stdout
+
+    PLAY [Adding a new user] *******************************************************
+
+    TASK [Gathering Facts] *********************************************************
+    ok: [server1]
+
+    TASK [Adding user Toyee] *******************************************************
+    changed: [server1]
+
+    PLAY RECAP *********************************************************************
+    server1                    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[student@workstation day1]$
+[student@workstation day1]$ ansible server1 -m user -a 'name=toyee state=absent remove=yes'
+server1 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": true,
+    "force": false,
+    "name": "toyee",
+    "remove": true,
+    "state": "absent"
+}
+[student@workstation day1]$

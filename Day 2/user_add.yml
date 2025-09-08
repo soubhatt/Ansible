@@ -1,0 +1,9 @@
+---
+- name: Adding a new user
+  hosts: server1
+  tasks:
+    - name: Adding user Toyee
+      ansible.builtin.user:
+        name: toyee
+        uid: 2000
+        state: present

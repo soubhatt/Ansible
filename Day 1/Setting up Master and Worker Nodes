@@ -63,7 +63,6 @@ Creating master_ansible,ansible_worker1 and ansible_worker2 from linode
 [student@workstation ansible-navigator]$ vim inventory
 [student@workstation ansible-navigator]$ cat inventory
     [student@workstation ansible-navigator]$ cat inventory
-    workstation ansible_become=false
     server1
     server2
 
@@ -159,9 +158,45 @@ Creating master_ansible,ansible_worker1 and ansible_worker2 from linode
 [student@workstation ~]$ podman rmi quay.io/ansible/creator-ee:v0.4.2
 [student@workstation ~]$ podman pull registry.redhat.io/ansible-automation-platform-25/ee-supported-rhel9
 [student@workstation ~]$ podman images
+    REPOSITORY                                                            TAG         IMAGE ID      CREATED      SIZE
+    registry.redhat.io/ansible-automation-platform-25/ee-supported-rhel9  latest      e9c33b173d82  6 weeks ago  2.28 GB
 [student@workstation ~]$ vim ~/.ansible-navigator.yml
 [student@workstation ~]$ cat ~/.ansible-navigator.yml
-[student@workstation ~]$ touch ansible.cfg
-[student@workstation ~]$ vim ansible.cfg
-[student@workstation ~]$ ansible-navigator exec ansible -- -i inventory web -m ansible.builtin.ping
-[student@workstation ~]$ cat ansible.cfg
+    ---
+    ansible-navigator:
+      execution-environment:
+        enabled: true
+        image: registry.redhat.io/ansible-automation-platform-25/ee-supported-rhel9:latest
+        pull:
+          policy: missing
+
+[student@workstation ansible-navigator ~]$ touch ansible.cfg
+[student@workstation ansible-navigator]$ vim ansible.cfg
+[student@workstation ansible-navigator]$ cat ansible.cfg
+    [defaults]
+    inventory = /home/student/ansible-navigator/inventory
+    remote_user =  student
+    ask_pass = false
+
+    [privilege_escalation]
+    become = true
+    become_method = sudo
+    become_user = root
+    become_ask_pass = false
+[student@workstation ansible-navigator]$
+[student@workstation ansible-navigator]$ ansible-navigator exec ansible -- -i inventory web -m ansible.builtin.ping
+    server1 | SUCCESS => {
+        "ansible_facts": {
+            "discovered_interpreter_python": "/usr/bin/python3"
+        },
+        "changed": false,
+        "ping": "pong"
+    }
+    server2 | SUCCESS => {
+        "ansible_facts": {
+            "discovered_interpreter_python": "/usr/bin/python3"
+        },
+        "changed": false,
+        "ping": "pong"
+    }
+[student@workstation ansible-navigator]$
