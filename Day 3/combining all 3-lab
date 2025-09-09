@@ -1,0 +1,66 @@
+[student@workstation data-secret]$ ansible-vault create secret.yml
+New Vault password:
+Confirm New Vault password:
+[student@workstation data-secret]$ vim users.yml
+[student@workstation data-secret]$ ansible-vault view secret.yml
+Vault password:
+    ---
+    - username: souvik
+    - pwhash: Redhat@1234@9876
+[student@workstation data-secret]$ ansible-navigator run users.yml -m stdout
+    ERROR! Attempting to decrypt but no vault secrets found
+    Please review the log for errors.
+[student@workstation data-secret]$ ansible-navigator run users.yml -m stdout --vault-password-file=vault-pass
+
+    PLAY [create user account] *****************************************************
+
+    TASK [Gathering Facts] *********************************************************
+    ok: [server1]
+
+    TASK [create user] *************************************************************
+    [DEPRECATION WARNING]: Encryption using the Python crypt module is deprecated.
+    The Python crypt module is deprecated and will be removed from Python 3.13.
+    Install the passlib library for continued encryption functionality. This
+    feature will be removed in version 2.17. Deprecation warnings can be disabled
+    by setting deprecation_warnings=False in ansible.cfg.
+    changed: [server1]
+
+    PLAY RECAP *********************************************************************
+    server1                    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[student@workstation data-secret]$ 
+[student@workstation data-secret]$ ansible server1 -m command -a 'tail /etc/passwd'
+    server1 | CHANGED | rc=0 >>
+    systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+    dbus:x:81:81:System message bus:/:/sbin/nologin
+    sssd:x:998:998:User for sssd:/:/sbin/nologin
+    tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+    sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+    polkitd:x:997:997:User for polkitd:/:/sbin/nologin
+    chrony:x:996:996:chrony system user:/var/lib/chrony:/sbin/nologin
+    student:x:1000:1000::/home/student:/bin/bash
+    apache:x:48:48:Apache:/usr/share/httpd:/sbin/nologin
+    souvik:x:1001:1001::/home/souvik:/bin/bash
+[student@workstation data-secret]$ ansible server1 -m user -a 'name=souvik state=absent remove=yes'
+    server1 | CHANGED => {
+        "ansible_facts": {
+            "discovered_interpreter_python": "/usr/bin/python3"
+        },
+        "changed": true,
+        "force": false,
+        "name": "souvik",
+        "remove": true,
+        "state": "absent"
+    }
+[student@workstation data-secret]$ ansible server1 -m command -a 'tail /etc/passwd'
+    server1 | CHANGED | rc=0 >>
+    nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+    systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+    dbus:x:81:81:System message bus:/:/sbin/nologin
+    sssd:x:998:998:User for sssd:/:/sbin/nologin
+    tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+    sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+    polkitd:x:997:997:User for polkitd:/:/sbin/nologin
+    chrony:x:996:996:chrony system user:/var/lib/chrony:/sbin/nologin
+    student:x:1000:1000::/home/student:/bin/bash
+    apache:x:48:48:Apache:/usr/share/httpd:/sbin/nologin
+[student@workstation data-secret]$

@@ -1,0 +1,108 @@
+[student@workstation ansible-navigator]$ mkdir data-secret
+[student@workstation ansible-navigator]$ cd data-secret/
+[student@workstation data-secret]$ cp ../inventory ../ansible.cfg .
+[student@workstation data-secret]$ ls
+    ansible.cfg  inventory
+[student@workstation data-secret]$
+
+#========creating a file with ansible-vault============#
+
+[student@workstation data-secret]$ ansible-vault create newfile
+    New Vault password:
+    Confirm New Vault password:
+[student@workstation data-secret]$ cat newfile
+    $ANSIBLE_VAULT;1.1;AES256
+    This is a user secret file
+    39393161623564393334666330326636633538623331623365353632353466333031313763353436
+    3062353161356532343238653963393863383932313939390a666464663037386535326234623066
+    34616134393136636330323664356165663439306563643361646533303037613237623234393730
+    3562386632366331390a653266663632303633353038316537626137386135313034616665386438
+    38633137373430333130366664356430316164633930643731653035646563376133
+[student@workstation data-secret]$ ansible-vault view newfile
+    Vault password:
+    Hi
+    This is a secret file
+[student@workstation data-secret]$ ansible-vault edit newfile
+Vault password:
+[student@workstation data-secret]$ ansible-vault view newfile
+Vault password:
+    Hi
+    This is a confidential file
+[student@workstation data-secret]$ ls -al
+    total 20
+    drwxr-xr-x. 2 student student 4096 Sep  9 03:04 .
+    drwxr-xr-x. 6 student student 4096 Sep  9 03:01 ..
+    -rw-r--r--. 1 student student  207 Sep  9 03:02 ansible.cfg
+    -rw-r--r--. 1 student student   98 Sep  9 03:02 inventory
+    -rw-------. 1 student student  484 Sep  9 03:04 newfile
+[student@workstation data-secret]$
+[student@workstation data-secret]$ vim newfile2
+[student@workstation data-secret]$ cat newfile2
+    This is a user secret file
+    [student@workstation data-secret]$ ansible-vault encrypt newfile2
+New Vault password:
+Confirm New Vault password:
+Encryption successful
+[student@workstation data-secret]$ cat newfile2
+    $ANSIBLE_VAULT;1.1;AES256
+    30376337333162303565353736656330386236653363383164613037306637376535333733323465
+    3764383565613731646139616162396337653031356266610a313764316163363939663531623762
+    35346632316364353163316432363536346161643832346235393061376536383738363163623666
+    3566306638363564620a336134643364636162363339366136356634393565343839663930653533
+    31386563393964633964656266383938303030656432636535386363303961313031
+    [student@workstation data-secret]$ ansible-vault view newfile2
+    Vault password:
+    This is a user secret file
+[student@workstation data-secret]$
+
+# for both the file i have kept password as password 
+#============= decrypt / redirection / re-key / encrypt ===============#
+
+[student@workstation data-secret]$ vim vault-pass
+[student@workstation data-secret]$ ansible-vault view newfile --vault-password=vault-pass
+Hi
+This is a confidential file
+[student@workstation data-secret]$ ansible-vault decrypt newfile
+Vault password:
+Decryption successful
+[student@workstation data-secret]$ cat newfile
+Hi
+This is a confidential file
+[student@workstation data-secret]$ ansible-vault encrypt newfile
+New Vault password:
+Confirm New Vault password:
+Encryption successful
+[student@workstation data-secret]$ ansible-vault decrypt newfile --output=newfile3
+Vault password:
+Decryption successful
+[student@workstation data-secret]$ cat newfile3
+Hi
+This is a confidential file
+[student@workstation data-secret]$ cat newfile
+$ANSIBLE_VAULT;1.1;AES256
+32306331343234643635376432316231666536336236356466323837616432653336646437376534
+3935653966636334646266616164663734376265363234380a353765383031616539336336613962
+36373166616235663463646566376133366131663737616436383737623030333533393830376137
+6238663830313838610a363133376537653663346430633336626436343638653666323430623864
+65363435356466346665646161313564626461326332626430383961323961383739336231623034
+6564343139386363333433373735613436666366363862313739
+[student@workstation data-secret]$
+[student@workstation data-secret]$ ansible-vault rekey newfile3
+Vault password:
+New Vault password:
+Confirm New Vault password:
+ERROR! input is not vault encrypted data.  for /home/student/ansible-navigator/data-secret/newfile3
+[student@workstation data-secret]$ cat newfile3
+Hi
+This is a confidential file
+[student@workstation data-secret]$ ansible-vault encrypt newfile3
+New Vault password:
+Confirm New Vault password:
+Encryption successful
+[student@workstation data-secret]$ ansible-vault rekey newfile3
+Vault password:
+New Vault password:
+Confirm New Vault password:
+Rekey successful
+[student@workstation data-secret]$
+# rekey'd the newfile3 as redhat

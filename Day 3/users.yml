@@ -1,0 +1,12 @@
+---
+- name: create user account
+  hosts: server1
+  become: True
+  remote_user: student
+  vars_files:
+    - secret.yml
+  tasks:
+    - name: create user
+      ansible.builtin.user:
+        name: "{{ username }}"
+        password: "{{ pwhash | password_hash('sha512') }}"
