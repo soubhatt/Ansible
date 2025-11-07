@@ -1,0 +1,76 @@
+[student@workstation facts]$ vim in_fact.yml
+[student@workstation facts]$ ansible-navigator run in_fact.yml --syntax-check
+[student@workstation facts]$ ansible-navigator run in_fact.yml -m stdout --syntax-check
+playbook: /home/student/ansible-navigator/facts/in_fact.yml
+[student@workstation facts]$ vim undo_in_fact.yml
+[student@workstation facts]$ ansible-navigator run in_fact.yml -m stdout
+
+PLAY [Install remote facts] ****************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [server1]
+
+TASK [Create the remote dir] ***************************************************
+ok: [server1]
+
+TASK [Install the new facts] ***************************************************
+ok: [server1]
+
+PLAY [Install the package] *****************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [server1]
+
+TASK [Install httpd] ***********************************************************
+changed: [server1]
+
+TASK [Start the service] *******************************************************
+changed: [server1]
+
+PLAY RECAP *********************************************************************
+server1                    : ok=6    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[student@workstation facts]$ ansible server1 -m command -a 'rpm -q httpd'
+server1 | CHANGED | rc=0 >>
+httpd-2.4.62-4.el9_6.4.x86_64
+[student@workstation facts]$ ansible server1 -m command -a 'ls -lR /etc/ansible/'
+server1 | CHANGED | rc=0 >>
+/etc/ansible/:
+total 4
+drwxr-xr-x. 2 root root 4096 Nov  7 04:27 facts.d
+
+/etc/ansible/facts.d:
+total 4
+-rw-r--r--. 1 root root 73 Nov  7 04:27 custom.fact
+[student@workstation facts]$ ansible-navigator run undo_in_fact.yml -m stdout
+
+PLAY [Undo custom facts and remove installed package] **************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [server1]
+
+TASK [Stop and disable the service] ********************************************
+changed: [server1]
+
+TASK [Remove the package] ******************************************************
+changed: [server1]
+
+TASK [Remove the custom fact file] *********************************************
+changed: [server1]
+
+TASK [Refresh facts after cleanup] *********************************************
+ok: [server1]
+
+PLAY RECAP *********************************************************************
+server1                    : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[student@workstation facts]$ ansible server1 -m command -a 'rpm -q httpd'
+server1 | FAILED | rc=1 >>
+package httpd is not installednon-zero return code
+[student@workstation facts]$ ansible server1 -m command -a 'ls -lR /etc/ansible/'
+server1 | CHANGED | rc=0 >>
+/etc/ansible/:
+total 4
+drwxr-xr-x. 2 root root 4096 Nov  7 05:05 facts.d
+
+/etc/ansible/facts.d:
+total 0
+[student@workstation facts]$

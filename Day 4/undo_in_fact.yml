@@ -1,0 +1,26 @@
+---
+- name: Undo custom facts and remove installed package
+  hosts: server1
+  become: true
+  vars:
+    remote_dir: /etc/ansible/facts.d
+    facts_file: custom.fact
+  tasks:
+    - name: Stop and disable the service
+      ansible.builtin.service:
+        name: "{{ ansible_facts['ansible_local']['custom']['general']['service'] | default('httpd') }}"
+        state: stopped
+        enabled: false
+
+    - name: Remove the package
+      ansible.builtin.dnf:
+        name: "{{ ansible_facts['ansible_local']['custom']['general']['package'] | default('httpd') }}"
+        state: absent
+
+    - name: Remove the custom fact file
+      ansible.builtin.file:
+        path: "{{ remote_dir }}/{{ facts_file }}"
+        state: absent
+
+    - name: Refresh facts after cleanup
+      ansible.builtin.setup:

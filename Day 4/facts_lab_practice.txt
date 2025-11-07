@@ -1,0 +1,715 @@
+
+[student@workstation ansible-navigator]$ mkdir facts
+[student@workstation ansible-navigator]$ cp ansible.cfg inventory facts/
+[student@workstation ansible-navigator]$ cd facts
+[student@workstation facts]$ ls
+ansible.cfg  inventory
+[student@workstation facts]$ vim facts.yml
+[student@workstation facts]$ 
+[student@workstation facts]$ vim fact_dump
+[student@workstation facts]$ ls
+ansible.cfg  fact_dump.yml  facts.yml  inventory
+[student@workstation facts]$ cat facts.yml
+  ---
+  - name:
+    hosts: web
+    tasks:
+      - name: Print Ansible facts
+        ansible.builtin.debug:
+          msg: >
+            The default IPv4 address of {{ ansible_facts.fqdn }}
+            is {{ ansible_facts.default_ipv4.address }}
+[student@workstation facts]$ cat fact_dump.yml
+  ---
+  - name: Fact dump
+    hosts: server1
+    tasks:
+      - name: Print all facts about server1
+        ansible.builtin.debug:
+          var: ansible_facts
+[student@workstation facts]$
+[student@workstation facts]$ ansible-navigator run facts.yml -m stdout
+
+PLAY [web] *********************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [server1]
+ok: [server2]
+
+TASK [Print Ansible facts] *****************************************************
+ok: [server1] => {
+    "msg": "The default IPv4 address of server1.example.com is 172.236.172.15\n"
+}
+ok: [server2] => {
+    "msg": "The default IPv4 address of server2.example.com is 172.236.172.47\n"
+}
+
+PLAY RECAP *********************************************************************
+server1                    : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+server2                    : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[student@workstation facts]$
+
+[student@workstation facts]$ ansible-navigator run fact_dump.yml -m stdout
+
+PLAY [Fact dump] ***************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [server1]
+
+TASK [Print all facts about server1] *******************************************
+ok: [server1] => {
+    "ansible_facts": {
+        "all_ipv4_addresses": [
+            "172.236.172.15"
+        ],
+        "all_ipv6_addresses": [
+            "2600:3c16::2000:61ff:fe2b:485d",
+            "fe80::2000:61ff:fe2b:485d"
+        ],
+        "apparmor": {
+            "status": "disabled"
+        },
+        "architecture": "x86_64",
+        "bios_date": "NA",
+        "bios_vendor": "Linode",
+        "bios_version": "Not Specified",
+        "board_asset_tag": "NA",
+        "board_name": "Standard PC (Q35 + ICH9, 2009)",
+        "board_serial": "pmp=22:00:61:2b:48:5d",
+        "board_vendor": "QEMU",
+        "board_version": "pc-q35-7.2",
+        "chassis_asset_tag": "NA",
+        "chassis_serial": "NA",
+        "chassis_vendor": "QEMU",
+        "chassis_version": "pc-q35-7.2",
+        "cmdline": {
+            "BOOT_IMAGE": "(hd0)/boot/vmlinuz-5.14.0-570.32.1.el9_6.x86_64",
+            "console": "ttyS0,19200n8",
+            "crashkernel": "1G-4G:192M,4G-64G:256M,64G-:512M",
+            "net.ifnames": "0",
+            "rhgb": true,
+            "ro": true,
+            "root": "UUID=7ec37c2a-a7d0-568d-13a6-4c08c9fd9caf"
+        },
+        "date_time": {
+            "date": "2025-11-07",
+            "day": "07",
+            "epoch": "1762487808",
+            "epoch_int": "1762487808",
+            "hour": "03",
+            "iso8601": "2025-11-07T03:56:48Z",
+            "iso8601_basic": "20251107T035648180225",
+            "iso8601_basic_short": "20251107T035648",
+            "iso8601_micro": "2025-11-07T03:56:48.180225Z",
+            "minute": "56",
+            "month": "11",
+            "second": "48",
+            "time": "03:56:48",
+            "tz": "UTC",
+            "tz_dst": "UTC",
+            "tz_offset": "+0000",
+            "weekday": "Friday",
+            "weekday_number": "5",
+            "weeknumber": "44",
+            "year": "2025"
+        },
+        "default_ipv4": {
+            "address": "172.236.172.15",
+            "alias": "eth0",
+            "broadcast": "172.236.172.255",
+            "gateway": "172.236.172.1",
+            "interface": "eth0",
+            "macaddress": "22:00:61:2b:48:5d",
+            "mtu": 1500,
+            "netmask": "255.255.255.0",
+            "network": "172.236.172.0",
+            "prefix": "24",
+            "type": "ether"
+        },
+        "default_ipv6": {
+            "address": "2600:3c16::2000:61ff:fe2b:485d",
+            "gateway": "fe80::a9fe:a9fe",
+            "interface": "eth0",
+            "macaddress": "22:00:61:2b:48:5d",
+            "mtu": 1500,
+            "prefix": "64",
+            "scope": "global",
+            "type": "ether"
+        },
+        "device_links": {
+            "ids": {
+                "sda": [
+                    "scsi-0QEMU_QEMU_HARDDISK_drive-scsi-disk-0"
+                ],
+                "sdb": [
+                    "scsi-0QEMU_QEMU_HARDDISK_drive-scsi-disk-1"
+                ]
+            },
+            "labels": {
+                "sda": [
+                    "linode-root"
+                ],
+                "sdb": [
+                    "linode-swap"
+                ]
+            },
+            "masters": {},
+            "uuids": {
+                "sda": [
+                    "7ec37c2a-a7d0-568d-13a6-4c08c9fd9caf"
+                ],
+                "sdb": [
+                    "f1408ea6-59a0-11ed-bc9d-525400000001"
+                ]
+            }
+        },
+        "devices": {
+            "sda": {
+                "holders": [],
+                "host": "",
+                "links": {
+                    "ids": [
+                        "scsi-0QEMU_QEMU_HARDDISK_drive-scsi-disk-0"
+                    ],
+                    "labels": [
+                        "linode-root"
+                    ],
+                    "masters": [],
+                    "uuids": [
+                        "7ec37c2a-a7d0-568d-13a6-4c08c9fd9caf"
+                    ]
+                },
+                "model": "QEMU HARDDISK",
+                "partitions": {},
+                "removable": "0",
+                "rotational": "0",
+                "sas_address": null,
+                "sas_device_handle": null,
+                "scheduler_mode": "mq-deadline",
+                "sectors": "103809024",
+                "sectorsize": "512",
+                "size": "49.50 GB",
+                "support_discard": "4096",
+                "vendor": "QEMU",
+                "virtual": 1
+            },
+            "sdb": {
+                "holders": [],
+                "host": "",
+                "links": {
+                    "ids": [
+                        "scsi-0QEMU_QEMU_HARDDISK_drive-scsi-disk-1"
+                    ],
+                    "labels": [
+                        "linode-swap"
+                    ],
+                    "masters": [],
+                    "uuids": [
+                        "f1408ea6-59a0-11ed-bc9d-525400000001"
+                    ]
+                },
+                "model": "QEMU HARDDISK",
+                "partitions": {},
+                "removable": "0",
+                "rotational": "0",
+                "sas_address": null,
+                "sas_device_handle": null,
+                "scheduler_mode": "mq-deadline",
+                "sectors": "1048576",
+                "sectorsize": "512",
+                "size": "512.00 MB",
+                "support_discard": "4096",
+                "vendor": "QEMU",
+                "virtual": 1
+            }
+        },
+        "discovered_interpreter_python": "/usr/bin/python3",
+        "distribution": "Rocky",
+        "distribution_file_parsed": true,
+        "distribution_file_path": "/etc/redhat-release",
+        "distribution_file_variety": "RedHat",
+        "distribution_major_version": "9",
+        "distribution_release": "Blue Onyx",
+        "distribution_version": "9.6",
+        "dns": {
+            "nameservers": [
+                "172.236.171.43",
+                "172.236.171.42",
+                "172.236.171.44"
+            ],
+            "search": [
+                "members.linode.com",
+                "example.com"
+            ]
+        },
+        "domain": "example.com",
+        "effective_group_id": 0,
+        "effective_user_id": 0,
+        "env": {
+            "HOME": "/root",
+            "LANG": "en_US.UTF-8",
+            "LOGNAME": "root",
+            "LS_COLORS": "rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;37;41:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=01;36:*.au=01;36:*.flac=01;36:*.m4a=01;36:*.mid=01;36:*.midi=01;36:*.mka=01;36:*.mp3=01;36:*.mpc=01;36:*.ogg=01;36:*.ra=01;36:*.wav=01;36:*.oga=01;36:*.opus=01;36:*.spx=01;36:*.xspf=01;36:",
+            "MAIL": "/var/mail/root",
+            "PATH": "/sbin:/bin:/usr/sbin:/usr/bin",
+            "PWD": "/home/student",
+            "SHELL": "/bin/bash",
+            "SHLVL": "0",
+            "SUDO_COMMAND": "/bin/sh -c echo BECOME-SUCCESS-bmeezagjxhlsdhtctjhrdnirtrhdzphj ; /usr/bin/python3 /home/student/.ansible/tmp/ansible-tmp-1762487807.4334157-22-122378940172422/AnsiballZ_setup.py",
+            "SUDO_GID": "1000",
+            "SUDO_UID": "1000",
+            "SUDO_USER": "student",
+            "TERM": "xterm",
+            "USER": "root",
+            "_": "/usr/bin/python3"
+        },
+        "eth0": {
+            "active": true,
+            "device": "eth0",
+            "features": {
+                "esp_hw_offload": "off [fixed]",
+                "esp_tx_csum_hw_offload": "off [fixed]",
+                "generic_receive_offload": "on",
+                "generic_segmentation_offload": "on",
+                "highdma": "on [fixed]",
+                "hsr_dup_offload": "off [fixed]",
+                "hsr_fwd_offload": "off [fixed]",
+                "hsr_tag_ins_offload": "off [fixed]",
+                "hsr_tag_rm_offload": "off [fixed]",
+                "hw_tc_offload": "off [fixed]",
+                "l2_fwd_offload": "off [fixed]",
+                "large_receive_offload": "off [fixed]",
+                "loopback": "off [fixed]",
+                "macsec_hw_offload": "off [fixed]",
+                "ntuple_filters": "off [fixed]",
+                "receive_hashing": "off [fixed]",
+                "rx_all": "off [fixed]",
+                "rx_checksumming": "on [fixed]",
+                "rx_fcs": "off [fixed]",
+                "rx_gro_hw": "on",
+                "rx_gro_list": "off",
+                "rx_udp_gro_forwarding": "off",
+                "rx_udp_tunnel_port_offload": "off [fixed]",
+                "rx_vlan_filter": "on [fixed]",
+                "rx_vlan_offload": "off [fixed]",
+                "rx_vlan_stag_filter": "off [fixed]",
+                "rx_vlan_stag_hw_parse": "off [fixed]",
+                "scatter_gather": "on",
+                "tcp_segmentation_offload": "on",
+                "tls_hw_record": "off [fixed]",
+                "tls_hw_rx_offload": "off [fixed]",
+                "tls_hw_tx_offload": "off [fixed]",
+                "tx_checksum_fcoe_crc": "off [fixed]",
+                "tx_checksum_ip_generic": "on",
+                "tx_checksum_ipv4": "off [fixed]",
+                "tx_checksum_ipv6": "off [fixed]",
+                "tx_checksum_sctp": "off [fixed]",
+                "tx_checksumming": "on",
+                "tx_esp_segmentation": "off [fixed]",
+                "tx_fcoe_segmentation": "off [fixed]",
+                "tx_gre_csum_segmentation": "off [fixed]",
+                "tx_gre_segmentation": "off [fixed]",
+                "tx_gso_list": "off [fixed]",
+                "tx_gso_partial": "off [fixed]",
+                "tx_gso_robust": "on [fixed]",
+                "tx_ipxip4_segmentation": "off [fixed]",
+                "tx_ipxip6_segmentation": "off [fixed]",
+                "tx_nocache_copy": "off",
+                "tx_scatter_gather": "on",
+                "tx_scatter_gather_fraglist": "off [fixed]",
+                "tx_sctp_segmentation": "off [fixed]",
+                "tx_tcp6_segmentation": "on",
+                "tx_tcp_ecn_segmentation": "on",
+                "tx_tcp_mangleid_segmentation": "off",
+                "tx_tcp_segmentation": "on",
+                "tx_tunnel_remcsum_segmentation": "off [fixed]",
+                "tx_udp_segmentation": "off [fixed]",
+                "tx_udp_tnl_csum_segmentation": "off [fixed]",
+                "tx_udp_tnl_segmentation": "off [fixed]",
+                "tx_vlan_offload": "off [fixed]",
+                "tx_vlan_stag_hw_insert": "off [fixed]",
+                "vlan_challenged": "off [fixed]"
+            },
+            "hw_timestamp_filters": [],
+            "ipv4": {
+                "address": "172.236.172.15",
+                "broadcast": "172.236.172.255",
+                "netmask": "255.255.255.0",
+                "network": "172.236.172.0",
+                "prefix": "24"
+            },
+            "ipv6": [
+                {
+                    "address": "2600:3c16::2000:61ff:fe2b:485d",
+                    "prefix": "64",
+                    "scope": "global"
+                },
+                {
+                    "address": "fe80::2000:61ff:fe2b:485d",
+                    "prefix": "64",
+                    "scope": "link"
+                }
+            ],
+            "macaddress": "22:00:61:2b:48:5d",
+            "module": "virtio_net",
+            "mtu": 1500,
+            "pciid": "virtio2",
+            "promisc": false,
+            "speed": -1,
+            "timestamping": [],
+            "type": "ether"
+        },
+        "fibre_channel_wwn": [],
+        "fips": false,
+        "form_factor": "Other",
+        "fqdn": "server1.example.com",
+        "gather_subset": [
+            "all"
+        ],
+        "hostname": "server1",
+        "hostnqn": "",
+        "interfaces": [
+            "lo",
+            "eth0"
+        ],
+        "is_chroot": false,
+        "iscsi_iqn": "",
+        "kernel": "5.14.0-570.32.1.el9_6.x86_64",
+        "kernel_version": "#1 SMP PREEMPT_DYNAMIC Fri Aug 8 18:29:23 UTC 2025",
+        "lo": {
+            "active": true,
+            "device": "lo",
+            "features": {
+                "esp_hw_offload": "off [fixed]",
+                "esp_tx_csum_hw_offload": "off [fixed]",
+                "generic_receive_offload": "on",
+                "generic_segmentation_offload": "on",
+                "highdma": "on [fixed]",
+                "hsr_dup_offload": "off [fixed]",
+                "hsr_fwd_offload": "off [fixed]",
+                "hsr_tag_ins_offload": "off [fixed]",
+                "hsr_tag_rm_offload": "off [fixed]",
+                "hw_tc_offload": "off [fixed]",
+                "l2_fwd_offload": "off [fixed]",
+                "large_receive_offload": "off [fixed]",
+                "loopback": "on [fixed]",
+                "macsec_hw_offload": "off [fixed]",
+                "ntuple_filters": "off [fixed]",
+                "receive_hashing": "off [fixed]",
+                "rx_all": "off [fixed]",
+                "rx_checksumming": "on [fixed]",
+                "rx_fcs": "off [fixed]",
+                "rx_gro_hw": "off [fixed]",
+                "rx_gro_list": "off",
+                "rx_udp_gro_forwarding": "off",
+                "rx_udp_tunnel_port_offload": "off [fixed]",
+                "rx_vlan_filter": "off [fixed]",
+                "rx_vlan_offload": "off [fixed]",
+                "rx_vlan_stag_filter": "off [fixed]",
+                "rx_vlan_stag_hw_parse": "off [fixed]",
+                "scatter_gather": "on",
+                "tcp_segmentation_offload": "on",
+                "tls_hw_record": "off [fixed]",
+                "tls_hw_rx_offload": "off [fixed]",
+                "tls_hw_tx_offload": "off [fixed]",
+                "tx_checksum_fcoe_crc": "off [fixed]",
+                "tx_checksum_ip_generic": "on [fixed]",
+                "tx_checksum_ipv4": "off [fixed]",
+                "tx_checksum_ipv6": "off [fixed]",
+                "tx_checksum_sctp": "on [fixed]",
+                "tx_checksumming": "on",
+                "tx_esp_segmentation": "off [fixed]",
+                "tx_fcoe_segmentation": "off [fixed]",
+                "tx_gre_csum_segmentation": "off [fixed]",
+                "tx_gre_segmentation": "off [fixed]",
+                "tx_gso_list": "on",
+                "tx_gso_partial": "off [fixed]",
+                "tx_gso_robust": "off [fixed]",
+                "tx_ipxip4_segmentation": "off [fixed]",
+                "tx_ipxip6_segmentation": "off [fixed]",
+                "tx_nocache_copy": "off [fixed]",
+                "tx_scatter_gather": "on [fixed]",
+                "tx_scatter_gather_fraglist": "on [fixed]",
+                "tx_sctp_segmentation": "on",
+                "tx_tcp6_segmentation": "on",
+                "tx_tcp_ecn_segmentation": "on",
+                "tx_tcp_mangleid_segmentation": "on",
+                "tx_tcp_segmentation": "on",
+                "tx_tunnel_remcsum_segmentation": "off [fixed]",
+                "tx_udp_segmentation": "on",
+                "tx_udp_tnl_csum_segmentation": "off [fixed]",
+                "tx_udp_tnl_segmentation": "off [fixed]",
+                "tx_vlan_offload": "off [fixed]",
+                "tx_vlan_stag_hw_insert": "off [fixed]",
+                "vlan_challenged": "on [fixed]"
+            },
+            "hw_timestamp_filters": [],
+            "ipv4": {
+                "address": "127.0.0.1",
+                "broadcast": "",
+                "netmask": "255.0.0.0",
+                "network": "127.0.0.0",
+                "prefix": "8"
+            },
+            "ipv6": [
+                {
+                    "address": "::1",
+                    "prefix": "128",
+                    "scope": "host"
+                }
+            ],
+            "mtu": 65536,
+            "promisc": false,
+            "timestamping": [],
+            "type": "loopback"
+        },
+        "loadavg": {
+            "15m": 0.0,
+            "1m": 0.01,
+            "5m": 0.0
+        },
+        "locally_reachable_ips": {
+            "ipv4": [
+                "127.0.0.0/8",
+                "127.0.0.1",
+                "172.236.172.15"
+            ],
+            "ipv6": [
+                "::1",
+                "2600:3c16::2000:61ff:fe2b:485d",
+                "fe80::2000:61ff:fe2b:485d"
+            ]
+        },
+        "lsb": {},
+        "lvm": "N/A",
+        "machine": "x86_64",
+        "machine_id": "b099dd4fc6754ec89509a7b08344c7fa",
+        "memfree_mb": 864,
+        "memory_mb": {
+            "nocache": {
+                "free": 1481,
+                "used": 290
+            },
+            "real": {
+                "free": 864,
+                "total": 1771,
+                "used": 907
+            },
+            "swap": {
+                "cached": 0,
+                "free": 511,
+                "total": 511,
+                "used": 0
+            }
+        },
+        "memtotal_mb": 1771,
+        "module_setup": true,
+        "mounts": [
+            {
+                "block_available": 11569343,
+                "block_size": 4096,
+                "block_total": 12752859,
+                "block_used": 1183516,
+                "device": "/dev/sda",
+                "fstype": "ext4",
+                "inode_available": 3199680,
+                "inode_total": 3244032,
+                "inode_used": 44352,
+                "mount": "/",
+                "options": "rw,seclabel,relatime",
+                "size_available": 47388028928,
+                "size_total": 52235710464,
+                "uuid": "7ec37c2a-a7d0-568d-13a6-4c08c9fd9caf"
+            }
+        ],
+        "nodename": "server1.example.com",
+        "os_family": "RedHat",
+        "pkg_mgr": "dnf",
+        "proc_cmdline": {
+            "BOOT_IMAGE": "(hd0)/boot/vmlinuz-5.14.0-570.32.1.el9_6.x86_64",
+            "console": "ttyS0,19200n8",
+            "crashkernel": "1G-4G:192M,4G-64G:256M,64G-:512M",
+            "net.ifnames": "0",
+            "rhgb": true,
+            "ro": true,
+            "root": "UUID=7ec37c2a-a7d0-568d-13a6-4c08c9fd9caf"
+        },
+        "processor": [
+            "0",
+            "AuthenticAMD",
+            "AMD EPYC 7713 64-Core Processor"
+        ],
+        "processor_cores": 1,
+        "processor_count": 1,
+        "processor_nproc": 1,
+        "processor_threads_per_core": 1,
+        "processor_vcpus": 1,
+        "product_name": "Compute Instance",
+        "product_serial": "81709191",
+        "product_uuid": "NA",
+        "product_version": "Not Specified",
+        "python": {
+            "executable": "/usr/bin/python3",
+            "has_sslcontext": true,
+            "type": "cpython",
+            "version": {
+                "major": 3,
+                "micro": 21,
+                "minor": 9,
+                "releaselevel": "final",
+                "serial": 0
+            },
+            "version_info": [
+                3,
+                9,
+                21,
+                "final",
+                0
+            ]
+        },
+        "python_version": "3.9.21",
+        "real_group_id": 0,
+        "real_user_id": 0,
+        "selinux": {
+            "config_mode": "enforcing",
+            "mode": "enforcing",
+            "policyvers": 33,
+            "status": "enabled",
+            "type": "targeted"
+        },
+        "selinux_python_present": true,
+        "service_mgr": "systemd",
+        "ssh_host_key_ecdsa_public": "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBODZ53dGLp9uPcyozzpLFRzJ/LdL2oiO+EbQf5rh6AiB3wYfMD3nDHM5EAOd/1AVq3Bv4GWeimYmJ8YeTpgc=",
+        "ssh_host_key_ecdsa_public_keytype": "ecdsa-sha2-nistp256",
+        "ssh_host_key_ed25519_public": "AAAAC3NzaC1lZDI1NTE5AAAAIBLvPI2c/8q4KWt8gJHOVHvoYxNdH/6qGFwf8aytE",
+        "ssh_host_key_ed25519_public_keytype": "ssh-ed25519",
+        "ssh_host_key_rsa_public": "AAAAB3NzaC1yc2EAAAADAQABAAABgQC+VbsNpyS2wjF4sznPUjLYh9RZfyhxb3Njbc4tPyOBZBnLVe/6iI/NmoVy3Hd4qHRAMuZlFjAeQtW6A0Y7KSa1a4EDBqQ1+8gKdzAWdz/990TwfIsu8Vt6iA8+ZvwFz7xF+949XMYuGH/LiQngrRx+AAvhWGmZAKlWqbGXQr0f23ReCh8kb0NjpPup6lI9ZUIqJIBqEhPBGa0ifSiLEutPNmUlIX/2pp1/sJVB3Un0LQnhx4jAIeWhShzqm0PFJ88X24Xjuyj8dpsvn4F6/JjxGS02Q3+AQd4vh38Ydf/Hyept4ryFgcN11L77yRBOCJkt6yX/ajmAlADbOKISAC1r/rVS29HnYZM0dC+bRmrURhGUMCtnDHO+GSbnUAgrz62wHo7caRJ1rP9MRziMp2Hk67uet35jOU1RYneOU+eQtrlH5oqvB/sxGY3b3dQHDavc3K93d2phS3Q+BdnkIbf54XkQNLexv5Q7nuh5OxWsDac1dY/GuyVEhvfTQfkE=",
+        "ssh_host_key_rsa_public_keytype": "ssh-rsa",
+        "swapfree_mb": 511,
+        "swaptotal_mb": 511,
+        "system": "Linux",
+        "system_capabilities": [],
+        "system_capabilities_enforced": "False",
+        "system_vendor": "Linode",
+        "uptime_seconds": 7648934,
+        "user_dir": "/root",
+        "user_gecos": "root",
+        "user_gid": 0,
+        "user_id": "root",
+        "user_shell": "/bin/bash",
+        "user_uid": 0,
+        "userspace_architecture": "x86_64",
+        "userspace_bits": "64",
+        "virtualization_role": "NA",
+        "virtualization_tech_guest": [],
+        "virtualization_tech_host": [],
+        "virtualization_type": "NA"
+    }
+}
+
+PLAY RECAP *********************************************************************
+server1                    : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[student@workstation facts]$
+[student@workstation facts]$ vim custom.fact
+  [general]
+  package = httpd
+  service = httpd
+  state = started
+  enabled = true
+[student@workstation facts]$ cat customfact.yml
+  ---
+  - name: Install remote facts
+    hosts: server1
+    vars:
+      remote_dir: /etc/ansible/facts.d
+      facts_file: custom.fact
+    tasks:
+      - name: Create the remote dir
+        ansible.builtin.file:
+          state: directory
+          recurse: yes
+          path: "{{ remote_dir }}"
+
+      - name: Install the new facts
+        ansible.builtin.copy:
+          src: "{{ facts_file }}"
+          dest: "{{ remote_dir }}"
+[student@workstation facts]$
+[student@workstation facts]$ ls
+ansible.cfg            custom.fact     fact_dump.yml  inventory
+ansible-navigator.log  customfact.yml  facts.yml
+[student@workstation facts]$
+[student@workstation facts]$ ansible-navigator run customfact.yml -m stdout
+
+PLAY [Install remote facts] ****************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [server1]
+
+TASK [Create the remote dir] ***************************************************
+changed: [server1]
+
+TASK [Install the new facts] ***************************************************
+changed: [server1]
+
+PLAY RECAP *********************************************************************
+server1                    : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[student@workstation facts]$
+
+# now if we do gather facts we can see that our custom facts are also shown 
+
+[student@workstation facts]$ ansible-navigator run fact_dump.yml -m stdout
+
+  PLAY [Fact dump] ***************************************************************
+
+  TASK [Gathering Facts] *********************************************************
+  ok: [server1]
+
+  TASK [Print all facts about server1] *******************************************
+  ok: [server1] => {
+      "ansible_facts": {
+          "all_ipv4_addresses": [
+              "172.236.172.15"
+          ],
+          "all_ipv6_addresses": [
+              "2600:3c16::2000:61ff:fe2b:485d",
+              "fe80::2000:61ff:fe2b:485d"
+          ],
+          "ansible_local": {
+              "custom": {
+                  "general": {
+                      "enabled": "true",
+                      "package": "httpd",
+                      "service": "httpd",
+                      "state": "started"
+                  }
+              }
+          },
+          "apparmor": {
+              "status": "disabled"
+          },
+          .
+          .
+          .
+          .
+          .
+                  "system_vendor": "Linode",
+          "uptime_seconds": 7650809,
+          "user_dir": "/root",
+          "user_gecos": "root",
+          "user_gid": 0,
+          "user_id": "root",
+          "user_shell": "/bin/bash",
+          "user_uid": 0,
+          "userspace_architecture": "x86_64",
+          "userspace_bits": "64",
+          "virtualization_role": "NA",
+          "virtualization_tech_guest": [],
+          "virtualization_tech_host": [],
+          "virtualization_type": "NA"
+      }
+  }
+
+  PLAY RECAP *********************************************************************
+  server1                    : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[student@workstation facts]$

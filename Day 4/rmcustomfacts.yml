@@ -1,0 +1,16 @@
+---
+- name: Remove installed remote facts
+  hosts: server1
+  vars:
+    remote_dir: /etc/ansible/facts.d
+    facts_file: custom.fact
+  tasks:
+    - name: Remove the custom fact file
+      ansible.builtin.file:
+        path: "{{ remote_dir }}/{{ facts_file }}"
+        state: absent
+
+    - name: Remove the remote facts directory (optional)
+      ansible.builtin.file:
+        path: "{{ remote_dir }}"
+        state: absent
