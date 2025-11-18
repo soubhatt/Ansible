@@ -1,0 +1,12 @@
+---
+- name: Install packages in loop
+  hosts: server1
+  vars:
+    remote_dir: /etc/ansible/facts.d
+    facts_file: custom.fact
+  tasks:
+    - name: Create the remote dir
+      ansible.builtin.file:
+        state: directory
+        recurse: yes
+        path: "{{ remote_dir }}"
